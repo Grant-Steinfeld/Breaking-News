@@ -1,78 +1,80 @@
 #
 # pref
-#set download dir in config to
+# set download dir in config to
 # /usr/local/lib/nltk_data
-#nltk.download('stopwords')
-#nltk.download('wordnet')
+# nltk.download('stopwords')
+# nltk.download('wordnet')
+# nltk.download('punkt')
 
 
-#
 import nltk
 from nltk.tokenize import word_tokenize
 import re
 from nltk.corpus import stopwords
-from nltk.stem.porter import PorterStemmer 
-from nltk.tokenize import RegexpTokenizer  
+from nltk.stem.porter import PorterStemmer
+from nltk.tokenize import RegexpTokenizer
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.probability import FreqDist
 
 import pdb
 
+
 def loadStopWords(path="stopwords.txt"):
-	with open('filename') as f:
-    		lines = [line.rstrip() for line in f]
-	return lines
+    # with open('filename') as f:
+    # 		lines = [line.rstrip() for line in f]
+    return ['tom', 'doc']
 
-def getStopWords():    
-	"""
-    	Creating a list of stop words and adding custom stopwords
- 	""" 
 
-	stop_words = set(stopwords.words("english"))  
+def getStopWords():
+    """
+    Creating a list of stop words and adding custom stopwords
+    """
 
-	##Add a list of custom stopwords
-	stop_words = stop_words.union(new_words)
-	return stop_words
+    stop_words = set(stopwords.words("english"))
 
+    # Add a list of custom stopwords
+    stop_words = stop_words.union(loadStopWords())
+    return stop_words
 
 
 def procText(text):
-	preProcessedWords = preProc(text)
+    preProcessedWords = preProc(text)
 
- 	#tokenize
-	tokens = nltk.word_tokenize(preProcessedWords)
+    # tokenize
+    tokens = nltk.word_tokenize(preProcessedWords)
 
-	is_adjective = lambda pos: pos[:2] == 'JJ'
-	adjectives = [word for (word, pos) in nltk.pos_tag(tokens) if is_adjective(pos)]
+    def is_adjective(pos): return pos[:2] == 'JJ'
+    adjectives = [word for (word, pos) in nltk.pos_tag(
+        tokens) if is_adjective(pos)]
 
+    return {'adjectives': adjectives}
 
-	return { 'adjectives':adjectives}
 
 def preProc(text):
-	stop_words = getStopWords()
+    stop_words = getStopWords()
 
-	#remove punctuations
-	text = re.sub('[^a-zA-Z]', ' ', text)
-	text = text.lower()
+    # remove punctuations
+    text = re.sub('[^a-zA-Z]', ' ', text)
+    text = text.lower()
 
-	#remove tags
-	text=re.sub("&lt;/?.*?&gt;"," &lt;&gt; ",text)
-    
-	# remove special characters and digits
-	text=re.sub("(\\d|\\W)+"," ",text)
-    
- 	#Convert to list from string
-	text = text.split()
-    
- 	#Lemmatisation
-	lem = WordNetLemmatizer()
- 	text = [lem.lemmatize(word) for word in text if not word in stop_words] 
-	return " ".join(text)
+    # remove tags
+    text = re.sub("&lt;/?.*?&gt;", " &lt;&gt; ", text)
 
-    
-if __name__=='__main__':
+    # remove special characters and digits
+    text = re.sub("(\\d|\\W)+", " ", text)
 
- 	text = """
+    # Convert to list from string
+    text = text.split()
+
+    # Lemmatisation
+    lem = WordNetLemmatizer()
+    text = [lem.lemmatize(word) for word in text if not word in stop_words]
+    return " ".join(text)
+
+
+if __name__ == '__main__':
+
+    text = """
     [Verse 1]
 Dark in the city, night is a wire
 Steam in the subway, earth is afire
@@ -100,5 +102,5 @@ You feel my heat, I'm just a moment behind
 Do do do do do do do dodo dododo dodo
 """
 
-    x= procText(text)
-    print (x)
+    x = procText(text)
+    print(x)
